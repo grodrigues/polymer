@@ -267,6 +267,16 @@ gulp.task('generate-externs', ['clean'], () => {
   });
 });
 
+gulp.task('generate-typescript', () => {
+  let genTs = require('@polymer/gen-typescript-declarations').generateDeclarations;
+  del.sync(['**/*.d.ts']);
+  return genTs('.', JSON.parse(fs.readFileSync('gen-tsd.json'))).then((files) => {
+    for (const [path, contents] of files) {
+      fs.writeFileSync(path, contents);
+    }
+  });
+});
+
 gulp.task('update-version', () => {
   gulp.src('lib/utils/boot.html')
   .pipe(replace(/(window.Polymer.version = )'\d+\.\d+\.\d+'/, `$1'${require('./package.json').version}'`))

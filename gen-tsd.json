@@ -1,0 +1,9 @@
+{
+  "exclude": [
+    "dist/",
+    "externs/",
+    "gulpfile.js",
+    "test/",
+    "util/"
+  ]
+}
