@@ -38,6 +38,10 @@ const {PolymerProject, HtmlSplitter} = require('polymer-build');
 
 const {Transform} = require('stream');
 
+const {promisify} = require('util');
+const writeFile = promisify(fs.writeFile);
+const readFile = promisify(fs.readFile);
+
 class BackfillStream extends Transform {
   constructor(fileList) {
     super({objectMode: true});
@@ -260,21 +264,22 @@ gulp.task('lint', (done) => {
   runseq('lint-eslint', 'lint-closure', done);
 });
 
-gulp.task('generate-externs', ['clean'], () => {
+gulp.task('generate-externs', ['clean'], async () => {
   let genClosure = require('@polymer/gen-closure-declarations').generateDeclarations;
-  return genClosure().then((declarations) => {
-    fs.writeFileSync('externs/closure-types.js', `${header}${declarations}`);
-  });
+  const declarations = await genClosure();
+  await writeFile('externs/closure-types.js', `${header}${declarations}`);
 });
 
-gulp.task('generate-typescript', () => {
+gulp.task('generate-typescript', async () => {
   let genTs = require('@polymer/gen-typescript-declarations').generateDeclarations;
-  del.sync(['**/*.d.ts']);
-  return genTs('.', JSON.parse(fs.readFileSync('gen-tsd.json'))).then((files) => {
-    for (const [path, contents] of files) {
-      fs.writeFileSync(path, contents);
-    }
-  });
+  await del(['**/*.d.ts']);
+  const config = JSON.parse(await readFile('gen-tsd.json'));
+  const files = await genTs('.', config);
+  const writes = [];
+  for (const [path, contents] of files) {
+    writes.push(writeFile(path, contents));
+  }
+  await Promise.all(writes);
 });
 
 gulp.task('update-version', () => {
