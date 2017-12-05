@@ -5,5 +5,10 @@
     "gulpfile.js",
     "test/",
     "util/"
-  ]
+  ],
+  "augment": {
+    "utils/boot.d.ts": [
+      "augment-types.d.ts"
+    ]
+  }
 }
