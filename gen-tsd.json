@@ -7,7 +7,7 @@
     "util/"
   ],
   "augment": {
-    "utils/boot.d.ts": [
+    "lib/utils/boot.d.ts": [
       "augment-types.d.ts"
     ]
   }
