@@ -6,7 +6,11 @@
     "test/",
     "util/"
   ],
-  "augment": {
+  "removeReferences": [
+    "../shadycss/apply-shim.d.ts",
+    "../shadycss/custom-style-interface.d.ts"
+  ],
+  "addReferences": {
     "lib/utils/boot.d.ts": [
       "augment-types.d.ts"
     ]
